@@ -1,0 +1,176 @@
+
+/* Modern fluid design */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: 0;
+}
+h1, h2, h3, h4, .font-display {
+  font-family: 'Poppins', sans-serif;
+}
+/* Modern fluid elements */
+html {
+  scroll-behavior: smooth;
+}
+
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
+}
+
+.gradient-bg {
+  background: var(--gradient);
+}
+
+.shape-blur {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: var(--primary-light);
+  filter: blur(90px);
+  opacity: 0.15;
+  z-index: -1;
+  border-radius: 50%;
+}
+/* Custom file upload styling */
+#file-upload + label {
+    transition: all 0.3s ease;
+}
+
+#file-upload:focus + label,
+#file-upload + label:hover {
+    transform: translateY(-1px);
+}
+/* Chat module styles */
+#chat-container {
+    scrollbar-width: thin;
+    scrollbar-color: #c7d2fe #f1f5f9;
+}
+
+#chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+#chat-container::-webkit-scrollbar-thumb {
+    background-color: #c7d2fe;
+    border-radius: 3px;
+}
+
+/* Chat bubble animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: 20px;
+}
+
+.typing-indicator span {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #a5b4fc;
+    border-radius: 50%;
+    animation: typingAnimation 1.5s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+    left: 0;
+    animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+    left: 15px;
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    left: 30px;
+    animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+}
+.flex.items-start:not(:last-child) {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom shadow for cards */
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Hover effect for cards */
+.hover\\:shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom transition for buttons */
+.transition {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Ensure table layout is fixed to prevent jumping during in-line expansion */
+table {
+    table-layout: fixed;
+}
+
+td {
+    word-wrap: break-word;
+}
+
+/* Specific styling for in-line revision area */
+.revision-container {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-badge {
+    white-space: nowrap;
+}
