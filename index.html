@@ -10,89 +10,145 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
-    <main class="flex-grow container mx-auto px-4 py-8 relative overflow-hidden">
-        <div class="shape-blur -top-20 -left-20"></div>
-        <div class="shape-blur -bottom-20 -right-20"></div>
-        
+    <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/80 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold font-display gradient-text">StoryPilot Login</h2>
+                <p class="text-gray-500 mt-2">Enter your credentials</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" class="w-full mt-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" placeholder="user">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="w-full mt-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" placeholder="pass">
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition-all">Login</button>
+                <p id="login-error" class="text-red-500 text-sm mt-2 hidden text-center">Invalid username or password.</p>
+            </form>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 relative">
         <div class="max-w-6xl mx-auto">
-            <section class="text-center mb-16 relative z-10 mt-10">
+            <section class="text-center mb-10 mt-10">
                 <h1 class="text-6xl font-bold text-gray-900 mb-6 font-display leading-tight">
                     Transform PRDs into Jira Stories <span class="gradient-text">StoryPilot</span>
                 </h1>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Upload requirements, verify generated stories in bulk, and sync directly to Jira.
-                </p>
             </section>
 
-            <section id="upload-section" class="glass-effect p-10 rounded-2xl shadow-xl mb-12 relative z-10">
-                <div class="space-y-6">
-                    <div class="border-b pb-6">
-                        <div class="flex items-center mb-4">
-                            <div class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold">1</div>
-                            <h3 class="text-xl font-semibold text-gray-800">Upload Your PRD Document</h3>
+            <section id="config-section" class="glass-effect p-10 rounded-2xl shadow-xl mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">1. Select Jira Project</label>
+                            <select id="project-select" class="block w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                <option value="KT">Knox Teams (KT)</option>
+                                <option value="SP">Story Pilot (SP)</option>
+                                <option value="DE">Data Engine (DE)</option>
+                            </select>
                         </div>
-                        <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-500 transition-all cursor-pointer bg-white/50">
-                            <i data-feather="upload-cloud" class="w-10 h-10 text-gray-400 mx-auto mb-3"></i>
-                            <p id="file-name-display" class="text-gray-600">Drag & drop or click to select .pdf or .docx</p>
-                            <input id="file-upload" type="file" class="hidden" accept=".pdf,.doc,.docx,.txt">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">2. Upload New PRD</label>
+                            <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-500 transition-all cursor-pointer bg-white/50">
+                                <i data-feather="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                                <p id="file-name-display" class="text-sm text-gray-600">Drag & drop or click to upload</p>
+                                <input id="file-upload" type="file" class="hidden" accept=".pdf,.doc,.docx,.txt">
+                            </div>
+                            <button id="generate-btn" class="w-full mt-4 gradient-bg text-white py-3 rounded-xl font-bold shadow-md hover:opacity-90 transition-all">Generate New Stories</button>
                         </div>
                     </div>
-
-                    <div class="border-b pb-6">
-                        <div class="flex items-center mb-4">
-                            <div class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold">2</div>
-                            <h3 class="text-xl font-semibold text-gray-800">Select Jira Project</h3>
+                    <div class="space-y-6 border-l pl-12 border-gray-200">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">OR Select Existing PRD</label>
+                            <div class="flex gap-2">
+                                <select id="prd-dropdown" class="block flex-grow px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                    <option value="" disabled selected>Choose a PRD...</option>
+                                </select>
+                                <button id="delete-prd-btn" class="px-4 py-2 bg-white border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors" title="Delete selected PRD">
+                                    <i data-feather="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
-                        <select id="project-select" class="block w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="KT">Knox Teams (KT)</option>
-                            <option value="SP">Story Pilot (SP)</option>
-                        </select>
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                            <p class="text-xs text-indigo-700 leading-relaxed">
+                                <strong>Note:</strong> Selecting an existing PRD will load the saved stories associated with the Jira project selected on the left.
+                            </p>
+                        </div>
                     </div>
+                </div>
+            </section>
 
-                    <button id="generate-btn" class="w-full gradient-bg text-white py-4 rounded-xl font-bold shadow-lg hover:opacity-90 transition-all flex items-center justify-center">
-                        <span>Generate Stories for Review</span>
-                        <i data-feather="cpu" class="ml-2 w-5 h-5"></i>
+            <section id="verification-section" class="hidden glass-effect p-8 rounded-2xl shadow-xl mb-20 animate-fadeIn">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <h2 id="active-prd-title" class="text-2xl font-bold text-gray-800">Stories</h2>
+                        <span id="story-count" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold">0 Items</span>
+                    </div>
+                    <button id="bulk-approve-btn" class="hidden bg-green-600 text-white px-6 py-2 rounded-lg font-bold shadow-md hover:bg-green-700 transition-all flex items-center gap-2">
+                        <i data-feather="check-circle" class="w-4 h-4"></i> Approve Selected
                     </button>
                 </div>
-            </section>
-
-            <section id="verification-section" class="hidden glass-effect p-8 rounded-2xl shadow-xl mb-20 relative z-10">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-900 font-display">Review Stories</h2>
-                        <p class="text-gray-500 text-sm">Approve items in bulk or edit details individually.</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span id="selected-count" class="text-indigo-600 font-bold text-sm hidden">0 selected</span>
-                        <button id="bulk-approve-btn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-green-700 transition-all flex items-center">
-                            <i data-feather="check-square" class="w-4 h-4 mr-2"></i> Approve Selected
-                        </button>
-                        <span id="story-count" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold border border-gray-200">0 Items</span>
-                    </div>
-                </div>
-                
-                <div class="overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-200">
+                <div class="overflow-hidden bg-white rounded-xl border border-gray-200">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b">
                             <tr>
-                                <th class="p-4 w-12"><input type="checkbox" id="select-all-checkbox" class="w-4 h-4 rounded border-gray-300 text-indigo-600 cursor-pointer"></th>
-                                <th class="p-4 text-xs font-bold text-gray-400 uppercase w-16">#</th>
-                                <th class="p-4 text-xs font-bold text-gray-400 uppercase">Story Details</th>
-                                <th class="p-4 text-xs font-bold text-gray-400 uppercase w-32">Status</th>
-                                <th class="p-4 text-xs font-bold text-gray-400 uppercase w-24 text-right">Actions</th>
+                                <th class="p-4 w-12"><input type="checkbox" id="select-all-cb"></th>
+                                <th class="p-4 w-16 text-xs text-gray-400 font-bold">#</th>
+                                <th class="p-4 text-xs text-gray-400 font-bold uppercase">Details</th>
+                                <th class="p-4 w-32 text-xs text-gray-400 font-bold uppercase">Status</th>
+                                <th class="p-4 w-32 text-right text-xs text-gray-400 font-bold uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="stories-tbody"></tbody>
                     </table>
                 </div>
-
-                <button id="final-jira-btn" class="w-full mt-8 bg-gray-900 hover:bg-black text-white py-5 rounded-xl font-bold transition-all shadow-xl flex items-center justify-center text-lg">
-                    <span>Start Jira Sync</span>
-                    <i data-feather="send" class="ml-2 w-6 h-6"></i>
-                </button>
+                <button id="final-jira-btn" class="w-full mt-8 bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-black transition-all">Start Jira Sync</button>
             </section>
         </div>
     </main>
+
+    <div id="detail-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-800">Story Revision</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600"><i data-feather="x"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Summary</label>
+                    <input type="text" id="modal-summary-input" class="w-full p-3 border rounded-xl font-semibold text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Full Description</label>
+                    <textarea id="modal-description-input" class="w-full p-3 border rounded-xl text-sm text-gray-600 leading-relaxed focus:ring-2 focus:ring-indigo-500 outline-none" rows="6"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Due Date</label>
+                        <p id="modal-due-date" class="text-sm font-medium text-gray-700 py-2"></p>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Priority</label>
+                        <div class="py-1"><span id="modal-priority" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"></span></div>
+                    </div>
+                </div>
+                <div class="pt-4 border-t">
+                    <label class="block text-sm font-bold text-red-600 mb-2">Needs Revision Feedback</label>
+                    <textarea id="modal-feedback" class="w-full p-3 border border-red-100 rounded-xl text-sm focus:ring-2 focus:ring-red-500 outline-none" rows="3" placeholder="Add feedback..."></textarea>
+                </div>
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex justify-end gap-3">
+                <button id="modal-cancel" class="px-6 py-2 text-gray-600 font-bold">Cancel</button>
+                <button id="modal-save-changes" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-md hover:bg-indigo-700">Save Changes</button>
+                <button id="modal-needs-revision" class="px-6 py-2 bg-red-600 text-white rounded-lg font-bold shadow-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Needs Revision</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] space-y-2"></div>
 
     <script src="script.js"></script>
     <script>feather.replace();</script>
